@@ -1,0 +1,24 @@
+{
+  "name": "calendario-especializado-seguros",
+  "version": "1.0.0",
+  "description": "Monorepo do Calendário Especializado em Seguros — PWA para corretoras",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "backend:install": "cd backend && npm install",
+    "backend:dev": "cd backend && npm run start:dev",
+    "backend:build": "cd backend && npm run build",
+    "frontend:install": "cd frontend && npm install",
+    "frontend:dev": "cd frontend && npm start",
+    "frontend:build": "cd frontend && npm run build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
+  },
+  "keywords": ["seguros", "pwa", "acessibilidade", "wcag", "neuroinclusao"],
+  "author": "Breno Forti",
+  "license": "UNLICENSED"
+}

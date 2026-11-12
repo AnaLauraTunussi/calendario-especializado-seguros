@@ -1,0 +1,5 @@
+# Dependências (recriadas com npm install)
+node_modules/
+
+# Build gerado automaticamente
+dist/
