@@ -52,8 +52,8 @@ Pré-requisito: [Docker Desktop](https://www.docker.com/products/docker-desktop/
 npm run docker:up
 ```
 
-- Aplicação: http://localhost:4200
-- API: http://localhost:3000/api
+- Aplicação: http://localhost:4200 (o Nginx repassa `/api` para o backend)
+- API direta: http://localhost:3000/api
 
 Para desenvolver localmente com Node.js 20 ou superior:
 
@@ -76,6 +76,16 @@ npm run test:unit        # só os unitários
 npm run test:integration # só os de integração
 npm run test:cov         # todos, com relatório de cobertura
 ```
+
+### Publicação na Vercel
+
+Site e API são publicados juntos, no mesmo domínio: o PWA como site estático e a API NestJS como função serverless em `/api` (`api/index.js`, configurada em `vercel.json`). O banco é um PostgreSQL gerenciado (Neon).
+
+1. Importe o repositório na Vercel (Framework Preset: **Other**, Root Directory: raiz).
+2. Em **Storage**, crie um banco **Neon** e conecte ao projeto (a variável `DATABASE_URL` é criada automaticamente).
+3. No SQL Editor do Neon, execute `database/init.sql` para criar as tabelas.
+4. Em **Environment Variables**, defina `JWT_SECRET` (texto longo e aleatório) e `APP_TIMEZONE=America/Sao_Paulo`.
+5. Faça o deploy e confira: `/api/eventos` deve responder 401 (API no ar, pedindo login).
 
 ## API
 
