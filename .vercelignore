@@ -1,0 +1,5 @@
+# Gerados no build da própria Vercel
+backend/dist
+frontend/dist
+frontend/.angular
+backend/coverage

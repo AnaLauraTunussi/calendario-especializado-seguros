@@ -1,5 +1,7 @@
 /**
- * Endereço da API NestJS. O navegador acessa o backend diretamente
- * (porta 3000), tanto em desenvolvimento quanto via Docker Compose.
+ * Endereço da API NestJS, sempre no mesmo domínio do site (sem CORS):
+ * - Vercel: função serverless em /api;
+ * - Docker: o Nginx repassa /api para o backend;
+ * - ng serve: o proxy (proxy.conf.json) repassa /api para localhost:3000.
  */
-export const API_URL = 'http://localhost:3000/api';
+export const API_URL = '/api';

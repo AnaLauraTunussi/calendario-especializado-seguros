@@ -23,7 +23,13 @@ describe('config/env', () => {
     expect(() => jwtSecret()).toThrow('Variável de ambiente obrigatória ausente: JWT_SECRET');
   });
 
+  it('usa a DATABASE_URL com SSL quando o banco é gerenciado na nuvem (ex.: Neon)', () => {
+    process.env.DATABASE_URL = ' postgres://usuario:senha@host.neon.tech/banco?sslmode=require ';
+    expect(databaseConfig()).toEqual({ url: 'postgres://usuario:senha@host.neon.tech/banco?sslmode=require', ssl: true });
+  });
+
   it('monta a configuração do banco a partir do ambiente', () => {
+    delete process.env.DATABASE_URL;
     Object.assign(process.env, {
       NODE_ENV: 'production',
       DATABASE_HOST: 'db',

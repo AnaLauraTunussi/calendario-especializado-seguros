@@ -17,13 +17,23 @@ export function readEnv(name: string, developmentDefault: string): string {
   return developmentDefault;
 }
 
-export const databaseConfig = () => ({
-  host: readEnv('DATABASE_HOST', 'localhost'),
-  port: Number(readEnv('DATABASE_PORT', '5432')),
-  username: readEnv('DATABASE_USER', 'corretor_admin'),
-  password: readEnv('DATABASE_PASSWORD', 'seguro_tech_2024'),
-  database: readEnv('DATABASE_NAME', 'calendario_seguros'),
-});
+/**
+ * Conexão com o PostgreSQL.
+ * - Banco gerenciado na nuvem (ex.: Neon, integrado à Vercel): uma única DATABASE_URL, com SSL.
+ * - Docker e desenvolvimento local: variáveis separadas.
+ */
+export const databaseConfig = () => {
+  const url = process.env.DATABASE_URL?.trim();
+  if (url) return { url, ssl: true };
+
+  return {
+    host: readEnv('DATABASE_HOST', 'localhost'),
+    port: Number(readEnv('DATABASE_PORT', '5432')),
+    username: readEnv('DATABASE_USER', 'corretor_admin'),
+    password: readEnv('DATABASE_PASSWORD', 'seguro_tech_2024'),
+    database: readEnv('DATABASE_NAME', 'calendario_seguros'),
+  };
+};
 
 /** Segredo de assinatura dos tokens JWT (único ponto de leitura). */
 export const jwtSecret = () => readEnv('JWT_SECRET', 'segredo-apenas-para-desenvolvimento-local');
