@@ -1,0 +1,95 @@
+# Integração Contínua: a cada push e pull request, compila e testa backend e frontend
+# e valida as imagens Docker. Nenhum código entra na main sem passar por esta esteira.
+name: CI
+
+on:
+  push:
+    branches: [main, 'feature/**']
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend — build e testes (unitários + integração)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: corretor_admin
+          POSTGRES_PASSWORD: seguro_tech_2024
+          POSTGRES_DB: calendario_seguros
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U corretor_admin -d calendario_seguros"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_HOST: localhost
+      DATABASE_PORT: 5432
+      DATABASE_USER: corretor_admin
+      DATABASE_PASSWORD: seguro_tech_2024
+      DATABASE_NAME: calendario_seguros
+      JWT_SECRET: segredo-apenas-para-a-esteira-de-ci
+      APP_TIMEZONE: America/Sao_Paulo
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Compilar backend
+        run: npm run build -w backend
+
+      - name: Criar esquema do banco (database/init.sql)
+        env:
+          PGPASSWORD: seguro_tech_2024
+        run: psql -h localhost -U corretor_admin -d calendario_seguros -v ON_ERROR_STOP=1 -f database/init.sql
+
+      - name: Testes unitários e de integração com cobertura
+        run: npm run test:cov -w backend -- --ci
+
+      - name: Publicar relatório de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobertura-backend
+          path: backend/coverage/
+          if-no-files-found: ignore
+
+  frontend:
+    name: Frontend — build de produção (PWA)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Build de produção do Angular
+        run: npm run build -w frontend
+
+  docker:
+    name: Docker — imagens do backend e do frontend
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Construir imagens
+        run: docker compose build backend frontend
