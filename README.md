@@ -41,8 +41,8 @@ Corretoras lidam com muitos prazos críticos: uma renovação esquecida pode sig
 
 **Qualidade**
 - O CSS é mobile-first: a base é o celular, com melhorias progressivas a partir de 360, 641, 1024 e 1200 px.
+- O backend tem 74 testes automatizados com Jest: 55 unitários (regras de negócio, autenticação, validação, configuração e tratamento de erros) e 19 de integração, que sobem a API completa e fazem requisições HTTP reais contra o PostgreSQL. A cobertura é de **100%** em instruções, decisões, funções e linhas.
 - Durante o desenvolvimento, as telas foram auditadas com axe-core (WCAG 2.1 AA) em vários tamanhos e nos dois temas, sem violações.
-- Também houve testes de ponta a ponta da API e da interface.
 
 ## Como executar
 
@@ -65,6 +65,17 @@ npm run frontend:dev
 ```
 
 As variáveis de ambiente do backend estão documentadas em `backend/.env.example`.
+
+### Testes
+
+Com o banco no ar (`docker compose up -d db`), dentro de `backend/`:
+
+```bash
+npm test                 # todos os testes (unitários e de integração)
+npm run test:unit        # só os unitários
+npm run test:integration # só os de integração
+npm run test:cov         # todos, com relatório de cobertura
+```
 
 ## API
 
