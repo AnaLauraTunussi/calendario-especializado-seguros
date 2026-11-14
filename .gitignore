@@ -3,3 +3,6 @@ node_modules/
 
 # Build gerado automaticamente
 dist/
+
+# Variáveis de ambiente locais (nunca versionar segredos)
+.env
