@@ -6,3 +6,6 @@ dist/
 
 # Variáveis de ambiente locais (nunca versionar segredos)
 .env
+
+# Relatórios de cobertura de testes (gerados por npm run test:cov)
+coverage/
