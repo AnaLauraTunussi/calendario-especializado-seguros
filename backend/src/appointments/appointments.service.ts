@@ -38,10 +38,6 @@ export class AppointmentsService {
   }
 
   /**
-   * RNF02 (OWASP A01: Broken Access Control):
-   * Lista apenas os compromissos pertencentes ao usuário autenticado (user_id).
-   */
-  /**
    * Prioridade de exibição (baixo ruído cognitivo: o mais urgente sempre no topo):
    * 0 = alerta preditivo ativo (data de alerta atingida e não concluído)
    * 1 = pendente
@@ -94,6 +90,11 @@ export class AppointmentsService {
     });
   }
 
+  /**
+   * RNF02 (OWASP A01: Broken Access Control):
+   * Lista apenas os compromissos pertencentes ao usuário autenticado (user_id),
+   * com filtros opcionais e ordenação por prioridade.
+   */
   async findAll(userId: string, query?: QueryAppointmentDto): Promise<Appointment[]> {
     const where: any = { userId };
 
