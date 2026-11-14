@@ -15,6 +15,10 @@ export const ALLOWED_ORIGINS = [
  * a mesma pilha de segurança e validação da produção.
  */
 export function configureApp(app: INestApplication): INestApplication {
+  // Atrás de proxy (Nginx no Docker, rede da Vercel): usa o IP real do cliente (X-Forwarded-For),
+  // para o limite de tentativas de login valer por usuário e não pelo IP do proxy
+  app.getHttpAdapter().getInstance().set('trust proxy', 1);
+
   // OWASP A05:2021 - Cabeçalhos HTTP de segurança via Helmet
   app.use(helmet());
 
