@@ -45,6 +45,13 @@ describe('API — integração (HTTP + PostgreSQL)', () => {
     await app.close();
   });
 
+  describe('Monitoramento', () => {
+    it('GET /api/health é público e confirma API e banco operantes', async () => {
+      const res = await request(http).get('/api/health').expect(200);
+      expect(res.body).toMatchObject({ status: 'ok', banco: 'ok' });
+    });
+  });
+
   describe('Autenticação', () => {
     it('POST /api/auth/register cria a conta e devolve o token, sem o hash da senha', async () => {
       const res = await request(http)

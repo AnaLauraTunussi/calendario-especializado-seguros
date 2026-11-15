@@ -1,0 +1,36 @@
+# Monitoramento pós-lançamento: verifica periodicamente se o site e a API (com o banco)
+# continuam no ar. Se alguma verificação falhar, a execução fica vermelha (DOWN) e o
+# GitHub envia um e-mail de alerta para a responsável pelo repositório.
+name: Uptime
+
+on:
+  schedule:
+    - cron: '*/15 * * * *' # a cada 15 minutos
+  workflow_dispatch: # permite rodar manualmente pela aba Actions
+
+env:
+  SITE: https://calendario-especializado-seguros.vercel.app
+
+jobs:
+  verificar:
+    name: Site e API no ar
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Site (PWA) responde
+        run: |
+          curl --fail --silent --show-error --max-time 30 --retry 2 --retry-delay 15 --retry-all-errors \
+            -o /dev/null -w "Site: HTTP %{http_code} em %{time_total}s\n" "$SITE/"
+
+      - name: API e banco de dados respondem (/api/health)
+        run: |
+          resposta=$(curl --fail --silent --show-error --max-time 30 --retry 2 --retry-delay 15 --retry-all-errors "$SITE/api/health")
+          echo "API: $resposta"
+          echo "$resposta" | grep -q '"banco":"ok"'
+
+      - name: Registrar resultado
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then estado="UP ✅"; else estado="DOWN ❌"; fi
+          echo "### Status: $estado" >> "$GITHUB_STEP_SUMMARY"
+          echo "Verificado em $(date -u '+%d/%m/%Y %H:%M') UTC — $SITE" >> "$GITHUB_STEP_SUMMARY"

@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { AppointmentsModule } from './appointments/appointments.module';
 import { databaseConfig } from './config/env';
+import { HealthController } from './health/health.controller';
 
 @Module({
   imports: [
@@ -35,6 +36,8 @@ import { databaseConfig } from './config/env';
     AuthModule,
     AppointmentsModule,
   ],
+  // Rota de saúde (GET /api/health) usada pelo monitoramento de disponibilidade
+  controllers: [HealthController],
   providers: [
     {
       provide: APP_GUARD,
