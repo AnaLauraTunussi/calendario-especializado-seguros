@@ -1,5 +1,10 @@
 # Calendário Especializado em Seguros
 
+[![CI](https://github.com/AnaLauraTunussi/calendario-especializado-seguros/actions/workflows/ci.yml/badge.svg)](https://github.com/AnaLauraTunussi/calendario-especializado-seguros/actions/workflows/ci.yml)
+[![Uptime](https://github.com/AnaLauraTunussi/calendario-especializado-seguros/actions/workflows/uptime.yml/badge.svg)](https://github.com/AnaLauraTunussi/calendario-especializado-seguros/actions/workflows/uptime.yml)
+
+**Acesse:** https://calendario-especializado-seguros.vercel.app
+
 Aplicação web progressiva (PWA), mobile-first, para corretoras de seguros organizarem **vistorias, renovações de apólices, sinistros e reuniões**, com alertas automáticos antes dos vencimentos. Foi projetada para ser acessível (WCAG 2.1 AA) e inclusiva para pessoas autistas (nível 1 de suporte) e daltônicas, em linha com o ODS 8 da ONU (metas 8.2 e 8.5).
 
 ## O problema
@@ -41,7 +46,7 @@ Corretoras lidam com muitos prazos críticos: uma renovação esquecida pode sig
 
 **Qualidade**
 - O CSS é mobile-first: a base é o celular, com melhorias progressivas a partir de 360, 641, 1024 e 1200 px.
-- O backend tem 74 testes automatizados com Jest: 55 unitários (regras de negócio, autenticação, validação, configuração e tratamento de erros) e 19 de integração, que sobem a API completa e fazem requisições HTTP reais contra o PostgreSQL. A cobertura é de **100%** em instruções, decisões, funções e linhas.
+- O backend tem 81 testes automatizados com Jest: 60 unitários (regras de negócio, autenticação, validação, configuração, monitoramento e tratamento de erros) e 21 de integração, que sobem a API completa e fazem requisições HTTP reais contra o PostgreSQL. A cobertura é de **100%** em instruções, decisões, funções e linhas.
 - Durante o desenvolvimento, as telas foram auditadas com axe-core (WCAG 2.1 AA) em vários tamanhos e nos dois temas, sem violações.
 
 ## Como executar
@@ -87,6 +92,12 @@ Site e API são publicados juntos, no mesmo domínio: o PWA como site estático 
 4. Em **Environment Variables**, defina `JWT_SECRET` (texto longo e aleatório) e `APP_TIMEZONE=America/Sao_Paulo`.
 5. Faça o deploy e confira: `/api/eventos` deve responder 401 (API no ar, pedindo login).
 
+### Monitoramento
+
+A rota pública `GET /api/health` confirma que a API está no ar e que o banco responde: devolve `200` com `{"status":"ok","banco":"ok"}`, ou `503` quando o banco está indisponível.
+
+O workflow **Uptime** (`.github/workflows/uptime.yml`) verifica o site e essa rota a cada 15 minutos, com novas tentativas para falhas momentâneas. Se alguma verificação falhar, a execução fica vermelha (DOWN) e o GitHub envia um alerta por e-mail; o selo **Uptime** no topo deste README mostra o status mais recente. Também é possível rodar a verificação manualmente na aba **Actions**.
+
 ## API
 
 Todas as rotas ficam sob `/api`. As de `/eventos` exigem um token JWT.
@@ -98,6 +109,7 @@ Todas as rotas ficam sob `/api`. As de `/eventos` exigem um token JWT.
 | GET | `/eventos/alertas` | Compromissos com alerta ativo |
 | POST / PUT / DELETE | `/eventos`, `/eventos/:id` | Criar, editar e excluir |
 | PATCH | `/eventos/:id/concluir` | Concluir (fora da data, exige confirmação) |
+| GET | `/health` | Saúde da API e do banco (pública, usada pelo monitoramento) |
 
 ## Licença e privacidade
 
